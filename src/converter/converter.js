@@ -9,7 +9,7 @@ const Converter = () => {
         // synth.triggerAttackRelease("C4", "8n");
         // synth.triggerAttackRelease("C4", "8n", now);
         // synth.triggerAttackRelease("E4", "8n", now+1);
-        synth.triggerAttackRelease("C4", "8n", now);
+        // synth.triggerAttackRelease("C4", "8n", now);
         synth.triggerAttackRelease(getFirstHarmonyNote("C4"), "8n", now+0.5);
 
     }
