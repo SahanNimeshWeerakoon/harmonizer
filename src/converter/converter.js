@@ -1,37 +1,34 @@
 import React from 'react'
+import * as Tone from 'tone'
 
 const Converter = () => {
-    const play = (frequency) => {
-        // Create a new audio context
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    const play7 = () => {
+        const now = Tone.now();
+        const synth = new Tone.Synth().toDestination();
+        // synth.triggerAttackRelease("C4", "8n");
+        // synth.triggerAttackRelease("C4", "8n", now);
+        // synth.triggerAttackRelease("E4", "8n", now+1);
+        // synth.triggerAttackRelease("C4", "8n", now);
+        synth.triggerAttackRelease(getFirstHarmonyNote("C4"), "8n", now+0.5);
 
-        // Create an oscillator node
-        const oscillator = audioContext.createOscillator();
-
-        // Set frequency for the C note (261.63 Hz)
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-
-        // Set the waveform type (sine is the most common for a smooth tone)
-        oscillator.type = 'sine';
-
-        // Connect oscillator to the audio context destination (speakers)
-        oscillator.connect(audioContext.destination);
-
-        // Start the oscillator
-        oscillator.start();
-
-        // Stop the oscillator after 1 second
-        oscillator.stop(audioContext.currentTime + 1);   
     }
+
+    const getFirstHarmonyNote = (note) => {
+        const noteFrequency = Tone.Frequency(note);
+        // Add a major third interval (4 semitones) to get the harmony
+        const harmonyFrequency = noteFrequency.transpose(4);
+        
+        // Convert back to note notation
+        const harmonyNote = harmonyFrequency.toNote();
+        return harmonyNote;
+    }
+ 
     return (
         <div>
-            <button onClick={() => {play(261.63)}}>Play C</button>
-            <button onClick={() => {play(293.66)}}>Play D</button>
-            <button onClick={() => {play(326)}}>Play D</button>
-            <button onClick={() => {play(261.63)}}>Play D</button>
-            <button onClick={() => {play(261.63)}}>Play D</button>
-            <button onClick={() => {play(261.63)}}>Play D</button>
-            <button onClick={() => {play(261.63)}}>Play D</button>
+            <div>
+                <button onClick={() => { play7(); }}>Play 7</button>
+            </div>
         </div>
     );
 }
