@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { extractNotesFromBuffer } from '../common'
+import { extractNotesFromBuffer } from '../../common'
 import * as Tone from 'tone'
 
 function AudioNoteExtractor() {
