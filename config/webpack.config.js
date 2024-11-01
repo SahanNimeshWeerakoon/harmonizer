@@ -596,19 +596,6 @@ module.exports = function (webpackEnv) {
           },
         }),
     ].filter(Boolean),
-    devServer: {
-      // other devServer options if needed
-      setupMiddlewares: function (middlewares, devServer) {
-        if (devServer) {
-          // Place any middleware setup code here
-          // For example:
-          devServer.app.get('/api/hello', (req, res) => {
-            res.json({ message: 'Hello from the custom middleware!' });
-          });
-        }
-        return middlewares;
-      },
-    },
     performance: false,
   };
 };

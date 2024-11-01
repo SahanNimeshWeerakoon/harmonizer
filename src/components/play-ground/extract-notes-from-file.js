@@ -15,7 +15,7 @@ function AudioNoteExtractor() {
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
         const notesArray = await extractNotesFromBuffer(audioBuffer);
-        console.log({ notesArray });
+        
         playHarmony(notesArray);
     };
 
