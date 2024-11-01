@@ -1,16 +1,8 @@
 import React, { useEffect } from 'react'
 
-const SevenNotes = () => {
-    const play = (frequency) => {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        oscillator.type = 'sine';
-        oscillator.connect(audioContext.destination);
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 1);   
-    }
+import SingleNote from './components/singleNote';
 
+const SevenNotes = () => {
     useEffect(() => {
         const handleKeyPress = (e) => {
             console.log("key pressed", e);
