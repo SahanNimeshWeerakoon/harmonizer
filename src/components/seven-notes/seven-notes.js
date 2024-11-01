@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-
 import SingleNote from './components/singleNote';
 
 const SevenNotes = () => {
@@ -16,14 +15,14 @@ const SevenNotes = () => {
     return (
         <div>
             <div>
-                <button onClick={() => {play(261.63)}}>Play C</button>
-                <button onClick={() => {play(293.66)}}>Play D</button>
-                <button onClick={() => {play(326)}}>Play E</button>
-                <button onClick={() => {play(342.015)}}>Play F</button>
-                <button onClick={() => {play(386)}}>Play G</button>
-                <button onClick={() => {play(440)}}>Play A</button>
-                <button onClick={() => {play(493.88)}}>Play B</button>
-                <button onClick={() => {play(523.251)}}>Play C</button>
+                <SingleNote note="C" ref={null} />
+                <SingleNote note="D" ref={null} />
+                <SingleNote note="E" ref={null} />
+                <SingleNote note="F" ref={null} />
+                <SingleNote note="G" ref={null} />
+                <SingleNote note="A" ref={null} />
+                <SingleNote note="B" ref={null} />
+                <SingleNote note="C5" ref={null} />
             </div>
         </div>
     );

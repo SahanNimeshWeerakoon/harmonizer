@@ -1,8 +1,10 @@
-import { useRef, forwardRef } from 'react'
+import { forwardRef } from 'react'
 
-const SingleNote = forwardRef(({frequency}, ref) => {
-    const buttonRef = useRef(null);
-    const play = (frequency) => {
+import NotesFreequencies from '../../../lib/notes-freequencies'
+
+const SingleNote = forwardRef(({note}, ref) => {
+    const play = () => {
+        const frequency = NotesFreequencies[note];
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
@@ -12,7 +14,7 @@ const SingleNote = forwardRef(({frequency}, ref) => {
         oscillator.stop(audioContext.currentTime + 1);   
     }
     return (
-        <button ref={buttonRef} onClick={() => {play(frequency)}}>Play C</button>
+        <button ref={ref} onClick={() => {play()}}>{note}</button>
     );
 })
 
