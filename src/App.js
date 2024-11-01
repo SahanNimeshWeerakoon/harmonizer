@@ -1,11 +1,10 @@
 import './App.css';
-import AudioNoteExtractor from './components/extract-notes-from-file';
-import Converter from './converter/converter';
+import PlayGround from './components/play-ground';
 
 function App() {
   return (
-    <div className="App">
-      <AudioNoteExtractor />
+    <div>
+      <PlayGround/>
     </div>
   );
 }
