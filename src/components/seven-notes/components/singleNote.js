@@ -11,7 +11,7 @@ const SingleNote = forwardRef(({note}, ref) => {
         oscillator.type = 'sine';
         oscillator.connect(audioContext.destination);
         oscillator.start();
-        oscillator.stop(audioContext.currentTime + 1);   
+        oscillator.stop(audioContext.currentTime + 0.2);   
     }
     return (
         <button ref={ref} onClick={() => {play()}}>{note}</button>
