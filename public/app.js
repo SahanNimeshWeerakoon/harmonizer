@@ -16,6 +16,9 @@ const fifthNotes = document.querySelector('#fifth-notes');
 const playMelodyButton = document.querySelector('#play-melody');
 const playThirdButton = document.querySelector('#play-third');
 const playFifthButton = document.querySelector('#play-fifth');
+const instrumentPicker = document.querySelector('#instrument-picker');
+const volumeSlider = document.querySelector('#volume-slider');
+const volumeValue = document.querySelector('#volume-value');
 const noteCount = document.querySelector('#note-count');
 const durationText = document.querySelector('#duration');
 const confidenceText = document.querySelector('#confidence');
@@ -27,6 +30,7 @@ let resultNotes = {
   fifth: [],
 };
 let playbackAudioContext = null;
+let masterGain = null;
 let playbackToken = 0;
 
 fileInput.addEventListener('change', () => {
@@ -44,6 +48,7 @@ clearButton.addEventListener('click', clearResults);
 playMelodyButton.addEventListener('click', () => playNoteSequence('melody'));
 playThirdButton.addEventListener('click', () => playNoteSequence('third'));
 playFifthButton.addEventListener('click', () => playNoteSequence('fifth'));
+volumeSlider.addEventListener('input', updateVolumeDisplay);
 
 async function analyzeSelectedFile() {
   if (!selectedFile) return;
@@ -124,26 +129,113 @@ function stopPlayback() {
 function getPlaybackAudioContext() {
   if (!playbackAudioContext) {
     playbackAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const compressor = playbackAudioContext.createDynamicsCompressor();
+    masterGain = playbackAudioContext.createGain();
+    compressor.threshold.value = -18;
+    compressor.knee.value = 18;
+    compressor.ratio.value = 8;
+    compressor.attack.value = 0.003;
+    compressor.release.value = 0.18;
+    masterGain.connect(compressor);
+    compressor.connect(playbackAudioContext.destination);
   }
 
   return playbackAudioContext;
 }
 
 function playTone(context, frequency, durationSeconds) {
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
+  const instrument = getInstrumentSettings();
+  const volume = Number(volumeSlider.value) / 100;
   const now = context.currentTime;
 
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(frequency, now);
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.22, now + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + durationSeconds);
+  masterGain.gain.setValueAtTime(volume, now);
+  instrument.partials.forEach((partial) => {
+    playPartial(context, frequency, durationSeconds, instrument, partial, now);
+  });
+}
+
+function playPartial(context, frequency, durationSeconds, instrument, partial, startTime) {
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const peakGain = instrument.gain * partial.gain;
+  const releaseStart = startTime + Math.max(instrument.attack + 0.02, durationSeconds - instrument.release);
+  const stopTime = startTime + durationSeconds + instrument.release + 0.03;
+
+  oscillator.type = partial.type;
+  oscillator.frequency.setValueAtTime(frequency * partial.ratio, startTime);
+
+  if (partial.detune) {
+    oscillator.detune.setValueAtTime(partial.detune, startTime);
+  }
+
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(peakGain, startTime + instrument.attack);
+
+  if (instrument.decay) {
+    gain.gain.exponentialRampToValueAtTime(peakGain * instrument.sustain, startTime + instrument.decay);
+  }
+
+  gain.gain.setValueAtTime(Math.max(0.0001, peakGain * instrument.sustain), releaseStart);
+  gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
 
   oscillator.connect(gain);
-  gain.connect(context.destination);
-  oscillator.start(now);
-  oscillator.stop(now + durationSeconds + 0.02);
+  gain.connect(masterGain);
+  oscillator.start(startTime);
+  oscillator.stop(stopTime);
+}
+
+function getInstrumentSettings() {
+  const instruments = {
+    piano: {
+      attack: 0.008,
+      decay: 0.16,
+      sustain: 0.35,
+      release: 0.2,
+      gain: 0.42,
+      partials: [
+        { type: 'triangle', ratio: 1, gain: 1 },
+        { type: 'sine', ratio: 2, gain: 0.42 },
+        { type: 'sine', ratio: 3, gain: 0.18 },
+      ],
+    },
+    guitar: {
+      attack: 0.006,
+      decay: 0.12,
+      sustain: 0.28,
+      release: 0.16,
+      gain: 0.46,
+      partials: [
+        { type: 'triangle', ratio: 1, gain: 1 },
+        { type: 'square', ratio: 2, gain: 0.18 },
+        { type: 'sine', ratio: 3, gain: 0.2 },
+      ],
+    },
+    violin: {
+      attack: 0.08,
+      decay: 0.18,
+      sustain: 0.82,
+      release: 0.24,
+      gain: 0.32,
+      partials: [
+        { type: 'sawtooth', ratio: 1, gain: 0.72 },
+        { type: 'sawtooth', ratio: 1, gain: 0.42, detune: 6 },
+        { type: 'triangle', ratio: 2, gain: 0.2 },
+      ],
+    },
+    flute: {
+      attack: 0.04,
+      decay: 0.16,
+      sustain: 0.74,
+      release: 0.18,
+      gain: 0.36,
+      partials: [
+        { type: 'sine', ratio: 1, gain: 1 },
+        { type: 'triangle', ratio: 2, gain: 0.16 },
+      ],
+    },
+  };
+
+  return instruments[instrumentPicker.value] || instruments.piano;
 }
 
 function wait(milliseconds) {
@@ -347,6 +439,10 @@ function setLoading(isLoading) {
 
 function setStatus(message) {
   statusText.textContent = message;
+}
+
+function updateVolumeDisplay() {
+  volumeValue.textContent = `${volumeSlider.value}%`;
 }
 
 function setPlaybackControls(forceDisabled = false) {

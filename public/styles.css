@@ -25,7 +25,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -68,6 +69,7 @@ h1 {
 
 .uploader,
 .controls,
+.playback-settings,
 .status,
 .summary-grid,
 .results {
@@ -162,6 +164,51 @@ button:disabled {
 button.secondary {
   background: transparent;
   color: var(--accent);
+}
+
+.playback-settings {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(220px, 1fr);
+  gap: 14px;
+  margin: 0 0 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.playback-settings label {
+  display: grid;
+  gap: 8px;
+}
+
+.playback-settings span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.playback-settings select,
+.playback-settings input[type='range'] {
+  width: 100%;
+}
+
+.playback-settings select {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+  color: var(--ink);
+}
+
+.playback-settings input[type='range'] {
+  accent-color: var(--accent);
+}
+
+.playback-settings output {
+  color: var(--ink);
+  font-weight: 800;
 }
 
 .summary-grid {
@@ -280,6 +327,10 @@ button.secondary {
   }
 
   .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .playback-settings {
     grid-template-columns: 1fr;
   }
 }

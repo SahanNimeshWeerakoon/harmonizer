@@ -35,6 +35,22 @@
           <button id="clear-button" type="button" class="secondary" disabled>Clear</button>
         </div>
 
+        <div class="playback-settings" aria-label="Playback settings">
+          <label>
+            <span>Instrument</span>
+            <select id="instrument-picker">
+              <option value="piano">Piano</option>
+              <option value="guitar">Guitar</option>
+              <option value="violin">Violin</option>
+              <option value="flute">Flute</option>
+            </select>
+          </label>
+          <label>
+            <span>Volume <output id="volume-value" for="volume-slider">150%</output></span>
+            <input id="volume-slider" type="range" min="25" max="300" value="150" step="5" />
+          </label>
+        </div>
+
         <div id="status" class="status" role="status">Waiting for an audio file.</div>
 
         <section class="summary-grid" aria-label="Analysis summary">
